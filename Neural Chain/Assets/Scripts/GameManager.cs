@@ -11,6 +11,11 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        CheckClick();
+    }
+
+    private void CheckClick()
+    {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
