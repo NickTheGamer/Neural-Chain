@@ -39,9 +39,9 @@ public class CameraController : MonoBehaviour
         transform.rotation = Quaternion.Euler(90f, 0f, 0f);
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y) * moveSpeed * Time.fixedDeltaTime;
+        Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y) * moveSpeed * Time.unscaledDeltaTime;
 
         Vector3 targetPos = transform.position + move;
         targetPos.y = yHeight;

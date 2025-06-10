@@ -19,14 +19,30 @@ public class GameManager : MonoBehaviour
     private List<GameObject> enemyAgents = new List<GameObject>();
     private GameObject currentPlayerAgent;
 
-    void Update()
-    {
-        CheckClick();
-    }
+    private bool isQueueing = false;
+    private const float selectionRadius = 0.5f;
+
+    private List<(GameObject agent, Vector3 destination)> queuedCommands = new();
+    private GameObject currentQueuedAgent = null;
 
     void Start()
     {
         SpawnAgents();
+    }
+
+    void Update()
+    {
+        isQueueing = Keyboard.current.shiftKey.isPressed;
+
+        //Pause everything except camera
+        Time.timeScale = isQueueing ? 0f : 1f;
+        
+        if (!isQueueing && queuedCommands.Count > 0)
+        {
+            ExecuteQueuedCommands();
+        }
+
+        CheckClick();
     }
 
     private void SpawnAgents()
@@ -56,24 +72,97 @@ public class GameManager : MonoBehaviour
             {
                 GameObject clickedObject = hit.collider.gameObject;
 
-                if (clickedObject.CompareTag("PlayerAgent"))
+                if (isQueueing)
                 {
-                    currentPlayerAgent = clickedObject;
+                    // Direct selection
+                    if (clickedObject.CompareTag("PlayerAgent"))
+                    {
+                        currentQueuedAgent = clickedObject;
+                        return;
+                    }
+
+                    // Soft selection
+                    GameObject softAgent = CheckLeeway(hit);
+                    if (softAgent != null)
+                    {
+                        currentQueuedAgent = softAgent;
+                        return;
+                    }
+
+                    // Queue command
+                    if (groundMask == (groundMask | (1 << hit.collider.gameObject.layer)) &&
+                        currentQueuedAgent != null &&
+                        NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshSampleMaxDistance, NavMesh.AllAreas))
+                    {
+                        queuedCommands.Add((currentQueuedAgent, navHit.position));
+                        currentQueuedAgent = null;
+                    }
+
                     return;
                 }
-            }
-
-            if (Physics.Raycast(ray, out RaycastHit groundHit, 100f, groundMask))
-            {
-                if (NavMesh.SamplePosition(groundHit.point, out NavMeshHit navHit, navMeshSampleMaxDistance, NavMesh.AllAreas))
+                else
                 {
-                    if (currentPlayerAgent != null)
+                    // Direct selection
+                    if (clickedObject.CompareTag("PlayerAgent"))
                     {
-                        NavMeshAgent agent = currentPlayerAgent.GetComponent<NavMeshAgent>();
-                        agent.SetDestination(navHit.position);
+                        currentPlayerAgent = clickedObject;
+                        return;
+                    }
+
+                    // Soft selection
+                    GameObject softAgent = CheckLeeway(hit);
+                    if (softAgent != null)
+                    {
+                        currentPlayerAgent = softAgent;
+                        return;
+                    }
+
+                    if (groundMask == (groundMask | (1 << hit.collider.gameObject.layer)) &&
+                        currentPlayerAgent != null &&
+                        NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshSampleMaxDistance, NavMesh.AllAreas))
+                    {
+                        currentPlayerAgent.GetComponent<NavMeshAgent>().SetDestination(navHit.position);
                     }
                 }
             }
         }
     }
+
+    private GameObject CheckLeeway(RaycastHit hit)
+    {
+        //Chooses closest agent if close together
+        Collider[] nearby = Physics.OverlapSphere(hit.point, selectionRadius);
+
+        GameObject closest = null;
+        float minDist = float.MaxValue;
+
+        foreach (Collider col in nearby)
+        {
+            if (col.CompareTag("PlayerAgent"))
+            {
+                float dist = Vector3.Distance(hit.point, col.transform.position);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    closest = col.gameObject;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+    private void ExecuteQueuedCommands()
+    {
+        //Execute all stored commands while time was stopped
+        foreach (var command in queuedCommands)
+        {
+            var agent = command.agent.GetComponent<NavMeshAgent>();
+            agent.SetDestination(command.destination);
+        }
+
+        queuedCommands.Clear();
+        currentQueuedAgent = null;
+    }
+
 }
