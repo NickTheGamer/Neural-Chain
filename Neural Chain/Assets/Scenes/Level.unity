@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 403677048}
   m_Layer: 0
   m_Name: Cube (2)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 799084734}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -994,8 +994,6 @@ MonoBehaviour:
   playerAgent: {fileID: 4308682238874024259, guid: 60fba259bb6cdcf49ac87ded893dbb9a, type: 3}
   enemyAgent: {fileID: 3449178700525699729, guid: 0a359f6859a6b5141bc84d3fb6ed246c, type: 3}
   navMeshSampleMaxDistance: 5
-  numPlayerAgents: 4
-  numEnemyAgents: 6
   playerSpawnPoints:
   - {fileID: 1342588997}
   - {fileID: 577249097}
@@ -1068,7 +1066,7 @@ GameObject:
   - component: {fileID: 1796268625}
   m_Layer: 0
   m_Name: Cube (1)
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

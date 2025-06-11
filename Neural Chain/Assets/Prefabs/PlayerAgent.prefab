@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2025022092277024629}
   - component: {fileID: 591869077921485037}
   - component: {fileID: 3491191871679668961}
+  - component: {fileID: 889918192704573467}
   m_Layer: 0
   m_Name: PlayerAgent
   m_TagString: PlayerAgent
@@ -254,6 +255,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ghostPathMaterial: {fileID: 2100000, guid: 12a4cc655534ee44f89433fdd3d85d42, type: 2}
+--- !u!114 &889918192704573467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4308682238874024259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e33407e0dbf3fdb40a226910addb351d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 6
+  viewDistance: 20
+  fieldOfView: 90
+  rayCount: 15
+  visionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  visionOrigin: {fileID: 4855627163490909054}
+  bulletPrefab: {fileID: 8689352320147145458, guid: 97f2e3df7af4d52468ef598e78a05b9d, type: 3}
+  firePoint: {fileID: 4855627163490909054}
+  maxAmmo: 12
+  burstInterval: 0.1
+  burstCooldown: 1
+  fireAngleThreshold: 2
+  navAgent: {fileID: 2025022092277024629}
 --- !u!1 &6544338853404909070
 GameObject:
   m_ObjectHideFlags: 0
