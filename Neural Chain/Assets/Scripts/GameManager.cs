@@ -90,11 +90,16 @@ public class GameManager : MonoBehaviour
                     }
 
                     // Queue command
+                    // Fast bitshift for layer comparison
                     if (groundMask == (groundMask | (1 << hit.collider.gameObject.layer)) &&
                         currentQueuedAgent != null &&
                         NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshSampleMaxDistance, NavMesh.AllAreas))
                     {
                         queuedCommands.Add((currentQueuedAgent, navHit.position));
+
+                        AgentPreviewPath preview = currentQueuedAgent.GetComponent<AgentPreviewPath>();
+                        if (preview != null) preview.ShowPreviewPath(navHit.position);
+
                         currentQueuedAgent = null;
                     }
 
@@ -157,8 +162,12 @@ public class GameManager : MonoBehaviour
         //Execute all stored commands while time was stopped
         foreach (var command in queuedCommands)
         {
-            var agent = command.agent.GetComponent<NavMeshAgent>();
+            NavMeshAgent agent = command.agent.GetComponent<NavMeshAgent>();
             agent.SetDestination(command.destination);
+
+            // Clear preview
+            var preview = command.agent.GetComponent<AgentPreviewPath>();
+            if (preview != null) preview.ClearPreviewPath();
         }
 
         queuedCommands.Clear();
