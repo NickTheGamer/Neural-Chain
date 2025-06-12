@@ -5,12 +5,24 @@ public class EnemyAgent : Agent
 {
     public float hearingRadius = 50f;
     private NavMeshAgent agent;
+    private bool chasing = false;
+    private Vector3 chasingLocation;
 
     protected override void Start()
     {
         base.Start();
         OnBulletBurstFired += OnBulletHeard;
         agent = gameObject.GetComponent<NavMeshAgent>();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (chasing && Vector3.Distance(transform.position, chasingLocation) <= 5f)
+        {
+            chasing = false;
+            agent.SetDestination(transform.position);
+        }
     }
 
     private void OnDestroy()
@@ -22,7 +34,9 @@ public class EnemyAgent : Agent
     {
         if (Vector3.Distance(transform.position, shotOrigin) <= hearingRadius)
         {
+            chasingLocation = shotOrigin;
             agent.SetDestination(shotOrigin);
+            chasing = true;
         }
     }
 }

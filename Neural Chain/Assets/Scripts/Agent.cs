@@ -197,6 +197,7 @@ public class Agent : MonoBehaviour
 
         // Notify enemies
         if (gameObject.tag == "PlayerAgent") OnBulletBurstFired?.Invoke(transform.position);
+        else if (gameObject.tag == "EnemyAgent") OnBulletBurstFired?.Invoke(currentTarget.transform.position);
 
         Quaternion bulletRotation = Quaternion.LookRotation(transform.forward) * Quaternion.Euler(-90, 0, 0);
 

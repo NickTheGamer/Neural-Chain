@@ -12,8 +12,8 @@ public class GameManager : MonoBehaviour
 
     public float navMeshSampleMaxDistance = 10f;
 
-    public Transform[] playerSpawnPoints;
-    public Transform[] enemySpawnPoints;
+    public GameObject[] playerSpawnPoints;
+    public GameObject[] enemySpawnPoints;
 
     private List<GameObject> playerAgents = new List<GameObject>();
     private List<GameObject> enemyAgents = new List<GameObject>();
@@ -49,14 +49,18 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerSpawnPoints.Length; i++)
         {
-            Transform spawnPos = playerSpawnPoints[i % playerSpawnPoints.Length];
+            GameObject point = playerSpawnPoints[i];
+            point.SetActive(false);
+            Transform spawnPos = point.transform;
             GameObject agent = Instantiate(playerAgent, spawnPos.position, spawnPos.rotation);
             playerAgents.Add(agent);
         }
 
         for (int i = 0; i < enemySpawnPoints.Length; i++)
         {
-            Transform spawnPos = enemySpawnPoints[i % enemySpawnPoints.Length];
+            GameObject point = enemySpawnPoints[i];
+            point.SetActive(false);
+            Transform spawnPos = point.transform;
             GameObject agent = Instantiate(enemyAgent, spawnPos.position, spawnPos.rotation);
             enemyAgents.Add(agent);
         }
