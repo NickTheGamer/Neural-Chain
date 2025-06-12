@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using FSM;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,8 +26,24 @@ public class GameManager : MonoBehaviour
     private List<(GameObject agent, Vector3 destination)> queuedCommands = new();
     private GameObject currentQueuedAgent = null;
 
+    private StateMachine enemyOverlord;
+
+    //info for each enemy
+    private struct AgentState
+    {
+        public float health;
+        public int ammo;
+        public Vector3 position;
+        public GameObject currentTarget;
+        public bool canChase;
+        public bool isAlive;
+    }
+    private AgentState[] agentStates;
+
+
     void Start()
     {
+        //CreateFSM();
         SpawnAgents();
     }
 
@@ -43,6 +60,7 @@ public class GameManager : MonoBehaviour
         }
 
         CheckClick();
+        //UpdateEnemies();
     }
 
     private void SpawnAgents()
@@ -178,4 +196,50 @@ public class GameManager : MonoBehaviour
         currentQueuedAgent = null;
     }
 
+    // private void CreateFSM()
+    // {
+    //     enemyOverlord = new StateMachine(this, needsExitTime: false);
+    // }
+
+    // private void UpdateEnemies()
+    // {
+    //     for (int i = 0; i < enemySpawnPoints.Length; i++)
+    //     {
+    //         Agent currentEnemy = enemyAgents[i].GetComponent<Agent>();
+    //         AgentState agentState = agentStates[i];
+    //         if (agentState.isAlive)
+    //         {
+    //             agentState.health = currentEnemy.currentHealth;
+    //             agentState.ammo = currentEnemy.currentAmmo;
+
+    //         }
+    //     }
+    // }
 }
+
+// private struct AgentState
+//     {
+//         public float health;
+//         public int ammo;
+//         public Vector3 position;
+//         public GameObject currentTarget;
+//         public bool canChase;
+//         public bool isAlive;
+//     }
+
+// // Add Searching state
+// harvesting_fsm.AddState("Searching", new State(onLogic: (state) => SearchingForResource()));
+// // Add Gathering/harvesting state
+// harvesting_fsm.AddState("Gathering", new State(onLogic: (state) => GatheringResource()));
+// // Add Dropping off state
+// harvesting_fsm.AddState("DroppingOff", new State(onLogic: (state) => DroppingOffResource()));
+
+// // ----- C. Define transitions between states -----
+
+// // Transition from Searching state to Gathering state.
+// // Transition happens when a crystal has been identified.
+// harvesting_fsm.AddTransition(new Transition(
+//     "Searching", // from state
+//     "Gathering", // to state
+//     (transition) => currentCrystal != null // condition that has to be met before transition happens
+// ));

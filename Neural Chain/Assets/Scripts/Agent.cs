@@ -6,14 +6,14 @@ using UnityEngine.AI;
 public class Agent : MonoBehaviour
 {
     public int maxHealth;
-    private int currentHealth;
+    public int currentHealth;
     public LayerMask visionMask;
     public Transform visionOrigin;
 
     public GameObject bulletPrefab;
     public Transform firePoint;
     public int maxAmmo = 12;
-    private int currentAmmo;
+    public int currentAmmo;
     public float burstInterval = 0.1f;
     public float burstCooldown = 1f;
     public float fireAngleThreshold = 2f;

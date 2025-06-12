@@ -6,6 +6,7 @@ public class EnemyAgent : Agent
     public float hearingRadius = 50f;
     private NavMeshAgent agent;
     private bool chasing = false;
+    public bool allowedToChase = true;
     private Vector3 chasingLocation;
 
     protected override void Start()
@@ -32,7 +33,7 @@ public class EnemyAgent : Agent
 
     private void OnBulletHeard(Vector3 shotOrigin)
     {
-        if (Vector3.Distance(transform.position, shotOrigin) <= hearingRadius)
+        if (Vector3.Distance(transform.position, shotOrigin) <= hearingRadius && allowedToChase)
         {
             chasingLocation = shotOrigin;
             agent.SetDestination(shotOrigin);
