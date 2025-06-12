@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5787738238623677248}
   - component: {fileID: 4902402767336620962}
   - component: {fileID: 397678285749550144}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,8 +121,8 @@ GameObject:
   - component: {fileID: 262400228004599093}
   - component: {fileID: 6806760174119810227}
   - component: {fileID: -3085336717790192084}
-  - component: {fileID: 167298483555791603}
-  m_Layer: 0
+  - component: {fileID: 3354498380576704851}
+  m_Layer: 7
   m_Name: EnemyAgent
   m_TagString: EnemyAgent
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &167298483555791603
+--- !u!114 &3354498380576704851
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -250,16 +250,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3449178700525699729}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e33407e0dbf3fdb40a226910addb351d, type: 3}
+  m_Script: {fileID: 11500000, guid: 41493ed1d02e05a4c908fab5acfc8520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
-  viewDistance: 20
-  fieldOfView: 90
-  rayCount: 15
   visionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 127
   visionOrigin: {fileID: 6588532917539803935}
   bulletPrefab: {fileID: 8689352320147145458, guid: b9907b43269035049ae839f538d7788e, type: 3}
   firePoint: {fileID: 6588532917539803935}
@@ -268,3 +265,12 @@ MonoBehaviour:
   burstCooldown: 1
   fireAngleThreshold: 3
   navAgent: {fileID: -3085336717790192084}
+  viewDistance: 25
+  fieldOfView: 100
+  rayCount: 25
+  sideRayCount: 8
+  sideRayArc: 35
+  sideViewDistance: 15
+  rearRayCount: 20
+  rearViewDistance: 5
+  hearingRadius: 50

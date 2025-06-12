@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 591869077921485037}
   - component: {fileID: 3491191871679668961}
   - component: {fileID: 889918192704573467}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerAgent
   m_TagString: PlayerAgent
   m_Icon: {fileID: 0}
@@ -123,10 +123,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 6
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 140
+  m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -267,13 +267,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33407e0dbf3fdb40a226910addb351d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 6
-  viewDistance: 20
-  fieldOfView: 90
-  rayCount: 15
+  maxHealth: 5
   visionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 191
   visionOrigin: {fileID: 4855627163490909054}
   bulletPrefab: {fileID: 8689352320147145458, guid: 97f2e3df7af4d52468ef598e78a05b9d, type: 3}
   firePoint: {fileID: 4855627163490909054}
@@ -282,6 +279,14 @@ MonoBehaviour:
   burstCooldown: 1
   fireAngleThreshold: 2
   navAgent: {fileID: 2025022092277024629}
+  viewDistance: 25
+  fieldOfView: 100
+  rayCount: 25
+  sideRayCount: 8
+  sideRayArc: 35
+  sideViewDistance: 15
+  rearRayCount: 20
+  rearViewDistance: 5
 --- !u!1 &6544338853404909070
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,7 +299,7 @@ GameObject:
   - component: {fileID: 1894131979572985686}
   - component: {fileID: 3326529207841549568}
   - component: {fileID: 5239364507220651277}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
