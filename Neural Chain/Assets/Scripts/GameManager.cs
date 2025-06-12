@@ -6,6 +6,18 @@ using FSM;
 
 public class GameManager : MonoBehaviour
 {
+    //info for each enemy
+    private struct AgentState
+    {
+        public float health;
+        public int ammo;
+        public Vector3 position;
+        public GameObject currentTarget;
+        public bool canChase;
+    }
+
+    //private AgentState[] agentStates;
+
     public Camera cam;
     public LayerMask groundMask;           // Only raycast against ground
     public GameObject playerAgent;
@@ -17,7 +29,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] enemySpawnPoints;
 
     private List<GameObject> playerAgents = new List<GameObject>();
-    private List<GameObject> enemyAgents = new List<GameObject>();
+    private List<(GameObject, AgentState)> enemyAgents = new();
     private GameObject currentPlayerAgent;
 
     private bool isQueueing = false;
@@ -28,22 +40,10 @@ public class GameManager : MonoBehaviour
 
     private StateMachine enemyOverlord;
 
-    //info for each enemy
-    private struct AgentState
-    {
-        public float health;
-        public int ammo;
-        public Vector3 position;
-        public GameObject currentTarget;
-        public bool canChase;
-        public bool isAlive;
-    }
-    private AgentState[] agentStates;
-
 
     void Start()
     {
-        //CreateFSM();
+        CreateFSM();
         SpawnAgents();
     }
 
@@ -60,7 +60,11 @@ public class GameManager : MonoBehaviour
         }
 
         CheckClick();
-        //UpdateEnemies();
+    }
+
+    void FixedUpdate()
+    {
+        UpdateEnemies();
     }
 
     private void SpawnAgents()
@@ -79,8 +83,17 @@ public class GameManager : MonoBehaviour
             GameObject point = enemySpawnPoints[i];
             point.SetActive(false);
             Transform spawnPos = point.transform;
-            GameObject agent = Instantiate(enemyAgent, spawnPos.position, spawnPos.rotation);
-            enemyAgents.Add(agent);
+            GameObject agentObject = Instantiate(enemyAgent, spawnPos.position, spawnPos.rotation);
+
+            Agent agent = agentObject.GetComponent<Agent>();
+            AgentState agentState = new();
+            agentState.health = agent.currentHealth;
+            agentState.ammo = agent.currentAmmo;
+            agentState.position = agentObject.transform.position;
+            agentState.currentTarget = agent.currentTarget;
+            agentState.canChase = true;
+
+            enemyAgents.Add((agentObject, agentState));
         }
     }
 
@@ -196,36 +209,29 @@ public class GameManager : MonoBehaviour
         currentQueuedAgent = null;
     }
 
-    // private void CreateFSM()
-    // {
-    //     enemyOverlord = new StateMachine(this, needsExitTime: false);
-    // }
+    private void CreateFSM()
+    {
+        enemyOverlord = new StateMachine(this, needsExitTime: false);
+    }
 
-    // private void UpdateEnemies()
-    // {
-    //     for (int i = 0; i < enemySpawnPoints.Length; i++)
-    //     {
-    //         Agent currentEnemy = enemyAgents[i].GetComponent<Agent>();
-    //         AgentState agentState = agentStates[i];
-    //         if (agentState.isAlive)
-    //         {
-    //             agentState.health = currentEnemy.currentHealth;
-    //             agentState.ammo = currentEnemy.currentAmmo;
+    private void UpdateEnemies()
+    {
+        for (int i = 0; i < enemyAgents.Count; i++)
+        {
+            GameObject enemyObj = enemyAgents[i].Item1;
+            AgentState agentState = enemyAgents[i].Item2;
 
-    //         }
-    //     }
-    // }
+            if (enemyObj)
+            {
+                Agent currentEnemy = enemyObj.GetComponent<Agent>();
+                agentState.health = currentEnemy.currentHealth;
+                agentState.ammo = currentEnemy.currentAmmo;
+                agentState.position = enemyObj.transform.position;
+                agentState.currentTarget = currentEnemy.currentTarget;
+            }
+        }
+    }
 }
-
-// private struct AgentState
-//     {
-//         public float health;
-//         public int ammo;
-//         public Vector3 position;
-//         public GameObject currentTarget;
-//         public bool canChase;
-//         public bool isAlive;
-//     }
 
 // // Add Searching state
 // harvesting_fsm.AddState("Searching", new State(onLogic: (state) => SearchingForResource()));

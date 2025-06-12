@@ -20,7 +20,7 @@ public class Agent : MonoBehaviour
 
     public NavMeshAgent navAgent;
 
-    protected GameObject currentTarget;
+    public GameObject currentTarget;
     private bool isShooting = false;
 
     public float viewDistance = 20f;
