@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
-using FSM;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,10 +12,7 @@ public class GameManager : MonoBehaviour
         public int ammo;
         public Vector3 position;
         public GameObject currentTarget;
-        public bool canChase;
     }
-
-    //private AgentState[] agentStates;
 
     public Camera cam;
     public LayerMask groundMask;           // Only raycast against ground
@@ -27,6 +23,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject[] playerSpawnPoints;
     public GameObject[] enemySpawnPoints;
+    public GameObject[] healthPacks;
+    public GameObject[] ammoPickups;
+    public GameObject[] defensivePositions;
 
     private List<GameObject> playerAgents = new List<GameObject>();
     private List<(GameObject, AgentState)> enemyAgents = new();
@@ -38,12 +37,9 @@ public class GameManager : MonoBehaviour
     private List<(GameObject agent, Vector3 destination)> queuedCommands = new();
     private GameObject currentQueuedAgent = null;
 
-    private StateMachine enemyOverlord;
-
 
     void Start()
     {
-        CreateFSM();
         SpawnAgents();
     }
 
@@ -65,6 +61,7 @@ public class GameManager : MonoBehaviour
     void FixedUpdate()
     {
         UpdateEnemies();
+        ManageEnemies();
     }
 
     private void SpawnAgents()
@@ -91,9 +88,13 @@ public class GameManager : MonoBehaviour
             agentState.ammo = agent.currentAmmo;
             agentState.position = agentObject.transform.position;
             agentState.currentTarget = agent.currentTarget;
-            agentState.canChase = true;
 
             enemyAgents.Add((agentObject, agentState));
+        }
+
+        for (int i = 0; i < defensivePositions.Length; i++)
+        {
+            defensivePositions[i].SetActive(false);
         }
     }
 
@@ -209,11 +210,6 @@ public class GameManager : MonoBehaviour
         currentQueuedAgent = null;
     }
 
-    private void CreateFSM()
-    {
-        enemyOverlord = new StateMachine(this, needsExitTime: false);
-    }
-
     private void UpdateEnemies()
     {
         for (int i = 0; i < enemyAgents.Count; i++)
@@ -231,21 +227,10 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    private void ManageEnemies()
+    {
+        // TODO
+    }
+    
 }
-
-// // Add Searching state
-// harvesting_fsm.AddState("Searching", new State(onLogic: (state) => SearchingForResource()));
-// // Add Gathering/harvesting state
-// harvesting_fsm.AddState("Gathering", new State(onLogic: (state) => GatheringResource()));
-// // Add Dropping off state
-// harvesting_fsm.AddState("DroppingOff", new State(onLogic: (state) => DroppingOffResource()));
-
-// // ----- C. Define transitions between states -----
-
-// // Transition from Searching state to Gathering state.
-// // Transition happens when a crystal has been identified.
-// harvesting_fsm.AddTransition(new Transition(
-//     "Searching", // from state
-//     "Gathering", // to state
-//     (transition) => currentCrystal != null // condition that has to be met before transition happens
-// ));
