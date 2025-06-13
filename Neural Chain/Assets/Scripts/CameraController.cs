@@ -4,15 +4,15 @@ using UnityEngine.InputSystem;
 public class CameraController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 15f;
+    public float moveSpeed;
     public float scrollSpeed = 4f;
     private float yHeight = 20f;
     private float minHeight = 10f;
-    private float maxHeight = 30f;
+    private float maxHeight = 40f;
 
     [Header("Bounds")]
-    public Vector2 xBounds = new Vector2(-50f, 50f);
-    public Vector2 zBounds = new Vector2(-50f, 50f);
+    public Vector2 xBounds = new Vector2(-75f, 75f);
+    public Vector2 zBounds = new Vector2(-75f, 75f);
 
     private Vector2 movementInput;
 
@@ -26,10 +26,9 @@ public class CameraController : MonoBehaviour
         Vector2 scroll = value.Get<Vector2>();
         float scrollDelta = scroll.y;
 
-        float normalizedScroll = Mathf.Sign(scrollDelta); // just +1 or -1 for finer control of speed
-
         yHeight -= scrollDelta * scrollSpeed;
         yHeight = Mathf.Clamp(yHeight, minHeight, maxHeight);
+        moveSpeed = yHeight / 2;
     }
 
     

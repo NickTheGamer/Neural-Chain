@@ -18,12 +18,7 @@ public class EnemyAgent : Agent
     private Vector3 startPos;
     private Quaternion startRot;
     public Transform defensivePosition;
-
-    //Avoid state jittering
-    private float stateEnterTime;
-    private float minStateDuration = 1f;
-    private bool HasMinDurationElapsed() => Time.time - stateEnterTime >= minStateDuration;
-    private bool debugState = true;
+    private bool debugState = false;
     private string currentState;
 
 

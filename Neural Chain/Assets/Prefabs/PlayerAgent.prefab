@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33407e0dbf3fdb40a226910addb351d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 5
+  maxHealth: 6
   currentHealth: 0
   visionMask:
     serializedVersion: 2
@@ -284,7 +284,7 @@ MonoBehaviour:
   fireAngleThreshold: 1
   navAgent: {fileID: 2025022092277024629}
   currentTarget: {fileID: 0}
-  viewDistance: 25
+  viewDistance: 20
   fieldOfView: 100
   rayCount: 25
   sideRayCount: 8
@@ -293,7 +293,6 @@ MonoBehaviour:
   rearRayCount: 20
   rearViewDistance: 5
   healthAmmoText: {fileID: 587914112637262361}
-  audioPlayer: {fileID: 0}
 --- !u!54 &7292875183406605653
 Rigidbody:
   m_ObjectHideFlags: 0

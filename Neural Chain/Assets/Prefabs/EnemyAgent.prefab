@@ -269,7 +269,7 @@ MonoBehaviour:
   fireAngleThreshold: 2
   navAgent: {fileID: -3085336717790192084}
   currentTarget: {fileID: 0}
-  viewDistance: 25
+  viewDistance: 20
   fieldOfView: 100
   rayCount: 25
   sideRayCount: 8
@@ -277,7 +277,8 @@ MonoBehaviour:
   sideViewDistance: 15
   rearRayCount: 20
   rearViewDistance: 5
-  hearingRadius: 50
+  healthAmmoText: {fileID: 0}
+  hearingRadius: 20
   heardShots: 0
   canChase: 0
   shouldGetItem: 0

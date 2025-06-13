@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SpawnAgents();
+        cam.transform.position = new Vector3(-35, 20, -45);
     }
 
     void Update()
