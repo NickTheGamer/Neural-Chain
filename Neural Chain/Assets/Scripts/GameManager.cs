@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -37,6 +38,8 @@ public class GameManager : MonoBehaviour
     private List<(GameObject agent, Vector3 destination)> queuedCommands = new();
     private GameObject currentQueuedAgent = null;
 
+    public TextMeshProUGUI resultText;
+
 
     void Start()
     {
@@ -61,6 +64,12 @@ public class GameManager : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Remove any dead agents from their lists
+        playerAgents.RemoveAll(player => player == null);
+        enemyAgents.RemoveAll(enemy => enemy.Item1 == null);
+
+        //Win condition (Loss condition taken care of below in ManageEnemies())
+        if (playerAgents.Count <= 0) resultText.text = "You Win!";
         UpdateEnemies();
         ManageEnemies();
     }
@@ -231,14 +240,12 @@ public class GameManager : MonoBehaviour
 
     private void ManageEnemies()
     {
-        //Remove any dead players from list
-        playerAgents.RemoveAll(player => player == null);
-
         if (playerAgents.Count <= 0)
         {
             //If all players dead, all enemies go back to idle
             for (int i = 0; i < enemyAgents.Count; i++)
             {
+                resultText.text = "You Lose!";
                 GameObject enemyObj = enemyAgents[i].Item1;
                 EnemyAgent agent = enemyObj.GetComponent<EnemyAgent>();
                 agent.canChase = true;
@@ -285,7 +292,7 @@ public class GameManager : MonoBehaviour
 
         return (shortestDistance, closestIndex);
     }
-    
+
     public (float distance, int index) NearestAmmoBox(GameObject enemyObj)
     {
         float shortestDistance = float.MaxValue;
@@ -295,6 +302,26 @@ public class GameManager : MonoBehaviour
         {
             GameObject box = ammoBoxes[i];
             if (!box.activeInHierarchy) continue; // skip inactive boxes
+
+            float dist = Vector3.Distance(enemyObj.transform.position, box.transform.position);
+            if (dist < shortestDistance)
+            {
+                shortestDistance = dist;
+                closestIndex = i;
+            }
+        }
+
+        return (shortestDistance, closestIndex);
+    }
+    
+    public (float distance, int index) NearestDefensivePos(GameObject enemyObj)
+    {
+        float shortestDistance = float.MaxValue;
+        int closestIndex = -1;
+
+        for (int i = 0; i < defensivePositions.Length; i++)
+        {
+            GameObject box = defensivePositions[i];
 
             float dist = Vector3.Distance(enemyObj.transform.position, box.transform.position);
             if (dist < shortestDistance)

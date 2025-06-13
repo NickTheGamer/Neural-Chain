@@ -132,13 +132,6 @@ public class EnemyAgent : Agent
     {
         currentState = "StopIfInRange";
 
-        //Chase new target
-        //if (heardShots && chasingLocation)
-        //{
-        //    agent.SetDestination(chasingLocation);
-        //    heardShots = false;
-        //}
-
         //Stop if in range
         if (Vector3.Distance(transform.position, chasingLocation) <= 3f)
         {
