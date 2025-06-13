@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
         enemyAgents.RemoveAll(enemy => enemy.Item1 == null);
 
         //Win condition (Loss condition taken care of below in ManageEnemies())
-        if (playerAgents.Count <= 0) resultText.text = "You Win!";
+        if (enemyAgents.Count <= 0) resultText.text = "You Win!";
         UpdateEnemies();
         ManageEnemies();
     }

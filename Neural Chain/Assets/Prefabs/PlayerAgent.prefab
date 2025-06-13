@@ -281,7 +281,7 @@ MonoBehaviour:
   currentAmmo: 0
   burstInterval: 0.1
   burstCooldown: 1
-  fireAngleThreshold: 1
+  fireAngleThreshold: 0.8
   navAgent: {fileID: 2025022092277024629}
   currentTarget: {fileID: 0}
   viewDistance: 20

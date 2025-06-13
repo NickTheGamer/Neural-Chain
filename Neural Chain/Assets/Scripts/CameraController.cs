@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     public float scrollSpeed = 4f;
     private float yHeight = 20f;
     private float minHeight = 10f;
-    private float maxHeight = 40f;
+    private float maxHeight = 60f;
 
     [Header("Bounds")]
     public Vector2 xBounds = new Vector2(-75f, 75f);
