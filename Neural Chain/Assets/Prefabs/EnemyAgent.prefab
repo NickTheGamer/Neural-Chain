@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41493ed1d02e05a4c908fab5acfc8520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 3
+  maxHealth: 6
   currentHealth: 0
   visionMask:
     serializedVersion: 2
@@ -262,7 +262,7 @@ MonoBehaviour:
   visionOrigin: {fileID: 6588532917539803935}
   bulletPrefab: {fileID: 8689352320147145458, guid: b9907b43269035049ae839f538d7788e, type: 3}
   firePoint: {fileID: 6588532917539803935}
-  maxAmmo: 12
+  maxAmmo: 9
   currentAmmo: 0
   burstInterval: 0.1
   burstCooldown: 1

@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e33407e0dbf3fdb40a226910addb351d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 6
+  maxHealth: 10
   currentHealth: 0
   visionMask:
     serializedVersion: 2

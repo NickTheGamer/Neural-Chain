@@ -77,14 +77,11 @@ public class EnemyAgent : Agent
         enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => shouldDefend && !canChase && !shouldGetItem));
 
         // === GettingItem Transitions ===
-        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("GettingItem", "Chasing", (transition) => canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => canChase && !shouldGetItem && !shouldDefend));
         enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
 
         // === Defensive Transitions ===
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Chasing", (transition) => canChase && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "GettingItem", (transition) => shouldGetItem && !shouldDefend && !canChase));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => canChase && !shouldGetItem && !shouldDefend));
 
         // Set start state
         enemyAI.SetStartState("Idle");
@@ -199,13 +196,17 @@ public class EnemyAgent : Agent
             currentHealth = maxHealth;
             other.gameObject.SetActive(false);
             shouldGetItem = false;
+            canChase = true;
+            shouldDefend = false;
         }
 
         else if (other.CompareTag("AmmoBox"))
         {
             currentAmmo = maxAmmo;
-            shouldGetItem = false;
             other.gameObject.SetActive(false);
+            shouldGetItem = false;
+            canChase = true;
+            shouldDefend = false;
         }
     }
 }

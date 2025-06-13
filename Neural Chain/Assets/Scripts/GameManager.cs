@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -234,11 +235,14 @@ public class GameManager : MonoBehaviour
                 agentState.ammo = currentEnemy.currentAmmo;
                 agentState.position = enemyObj.transform.position;
                 agentState.currentTarget = currentEnemy.currentTarget;
+
+                // Replace the updated tuple back into the list
+                enemyAgents[i] = (enemyObj, agentState);
             }
         }
     }
 
-    private void ManageEnemies()
+    /*private void ManageEnemies()
     {
         if (playerAgents.Count <= 0)
         {
@@ -269,6 +273,94 @@ public class GameManager : MonoBehaviour
             {
 
             }
+        }
+    }*/
+
+    private void ManageEnemies()
+    {
+        if (playerAgents.Count <= 0)
+        {
+            resultText.text = "You Lose!";
+            for (int i = 0; i < enemyAgents.Count; i++)
+            {
+                GameObject enemyObj = enemyAgents[i].Item1;
+                EnemyAgent agent = enemyObj.GetComponent<EnemyAgent>();
+                agent.canChase = true;
+                agent.heardShots = false;
+                agent.shouldGetItem = false;
+                agent.shouldDefend = false;
+            }
+            return;
+        }
+
+        float reachableDist = 30f;
+        int healthThreshold = 3;
+        int ammoThreshold = 3;
+
+        HashSet<int> claimedHealthpacks = new HashSet<int>();
+        HashSet<int> claimedAmmoboxes = new HashSet<int>();
+        HashSet<int> claimedDefensiveSpots = new HashSet<int>();
+
+        for (int i = 0; i < enemyAgents.Count; i++)
+        {
+            GameObject enemyObj = enemyAgents[i].Item1;
+            AgentState agentState = enemyAgents[i].Item2;
+
+            if (!enemyObj) continue;
+
+            EnemyAgent agent = enemyObj.GetComponent<EnemyAgent>();
+            bool hasNeed = false;
+            bool fulfilledNeed = false;
+
+            // 1. Try to get health if below threshold
+            if (agentState.health <= healthThreshold)
+            {
+                hasNeed = true;
+                var (dist, index) = NearestHealthPack(enemyObj);
+                if (dist <= reachableDist && !claimedHealthpacks.Contains(index))
+                {
+                    claimedHealthpacks.Add(index);
+                    // Assign agent to retrieve healthpack
+                    agent.itemTarget = healthPacks[index].transform.position;
+                    agent.canChase = false;
+                    agent.shouldGetItem = true;
+                    agent.shouldDefend = false;
+                    fulfilledNeed = true;
+                    continue;
+                }
+            }
+
+            // 2. Try to get ammo if health is fine but ammo is low
+            if (agentState.ammo <= ammoThreshold)
+            {
+                hasNeed = true;
+                var (dist, index) = NearestAmmoBox(enemyObj);
+                if (dist <= reachableDist && !claimedAmmoboxes.Contains(index))
+                {
+                    claimedAmmoboxes.Add(index);
+                    // Assign agent to retrieve ammobox
+                    agent.itemTarget = ammoBoxes[index].transform.position;
+                    agent.canChase = false;
+                    agent.shouldGetItem = true;
+                    agent.shouldDefend = false;
+                    fulfilledNeed = true;
+                    continue;
+                }
+            }
+
+            // 3. If can't get either, go to defensive position
+            var (defDist, defIndex) = NearestDefensivePos(enemyObj);
+            if (!claimedDefensiveSpots.Contains(defIndex) && hasNeed && !fulfilledNeed)
+            {
+                claimedDefensiveSpots.Add(defIndex);
+                // Assign agent to take defensive position
+                agent.defensivePosition = defensivePositions[defIndex].transform;
+                agent.shouldDefend = true;
+                agent.canChase = false;
+                agent.shouldGetItem = false;
+            }
+
+            // 4. Otherwise remain idle (do nothing)
         }
     }
 
