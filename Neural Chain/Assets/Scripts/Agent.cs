@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -33,16 +34,26 @@ public class Agent : MonoBehaviour
     public float rearViewDistance = 3f;
     private bool showRay = true;
 
+    public TextMeshProUGUI healthAmmoText;
+    private Quaternion UIRotation;
+
     public static event Action<Vector3> OnBulletBurstFired;
 
     protected virtual void Start()
     {
         currentHealth = maxHealth;
         currentAmmo = maxAmmo;
+        if (healthAmmoText != null) UIRotation = healthAmmoText.transform.rotation;
     }
 
     protected virtual void Update()
     {
+        if (healthAmmoText != null)
+        {
+            healthAmmoText.text = $"Health: {currentHealth}\nAmmo: {currentAmmo}";
+            healthAmmoText.transform.rotation = UIRotation;
+        }
+
         ScanForTargets();
 
         if (currentTarget != null)
