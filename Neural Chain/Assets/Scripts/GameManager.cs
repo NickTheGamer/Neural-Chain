@@ -230,6 +230,24 @@ public class GameManager : MonoBehaviour
 
     private void ManageEnemies()
     {
+        //Remove any dead players from list
+        playerAgents.RemoveAll(player => player == null);
+
+        if (playerAgents.Count <= 0)
+        {
+            //If all players dead, all enemies go back to idle
+            for (int i = 0; i < enemyAgents.Count; i++)
+            {
+                GameObject enemyObj = enemyAgents[i].Item1;
+                EnemyAgent agent = enemyObj.GetComponent<EnemyAgent>();
+                agent.canChase = true;
+                agent.heardShots = false;
+                agent.shouldGetItem = false;
+                agent.shouldDefend = false;
+            }
+            return;
+        }
+
         float reachableDist = 30f;
         int healthThreshold = 3;
         int ammoThreshold = 6;

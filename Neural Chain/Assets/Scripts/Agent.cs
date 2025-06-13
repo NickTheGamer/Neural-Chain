@@ -37,12 +37,23 @@ public class Agent : MonoBehaviour
     public TextMeshProUGUI healthAmmoText;
     private Quaternion UIRotation;
 
+    private AudioSource audioPlayer;
+    private AudioClip gunshot;
+
     public static event Action<Vector3> OnBulletBurstFired;
 
     protected virtual void Start()
     {
         currentHealth = maxHealth;
         currentAmmo = maxAmmo;
+
+        gunshot = Resources.Load<AudioClip>("Sounds/gunshot3");
+        GameObject globalAudioObj = GameObject.FindWithTag("Audio");
+        if (globalAudioObj != null)
+        {
+            audioPlayer = globalAudioObj.GetComponent<AudioSource>();
+        }
+
         if (healthAmmoText != null) UIRotation = healthAmmoText.transform.rotation;
     }
 
@@ -229,6 +240,7 @@ public class Agent : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
+            audioPlayer.PlayOneShot(gunshot);
             Instantiate(bulletPrefab, firePoint.position, bulletRotation);
             yield return new WaitForSeconds(burstInterval);
         }

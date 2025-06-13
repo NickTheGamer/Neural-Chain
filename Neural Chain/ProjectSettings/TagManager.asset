@@ -11,6 +11,7 @@ TagManager:
   - Obstacle
   - HealthPack
   - AmmoBox
+  - Audio
   layers:
   - Default
   - TransparentFX
