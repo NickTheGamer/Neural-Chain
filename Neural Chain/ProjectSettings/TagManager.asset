@@ -9,6 +9,8 @@ TagManager:
   - Laser
   - LaserEnemy
   - Obstacle
+  - HealthPack
+  - AmmoBox
   layers:
   - Default
   - TransparentFX

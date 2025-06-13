@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     }
 
     public Camera cam;
-    public LayerMask groundMask;           // Only raycast against ground
+    public LayerMask groundMask;           // Only raycast against ground (and items)
     public GameObject playerAgent;
     public GameObject enemyAgent;
 
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] playerSpawnPoints;
     public GameObject[] enemySpawnPoints;
     public GameObject[] healthPacks;
-    public GameObject[] ammoPickups;
+    public GameObject[] ammoBoxes;
     public GameObject[] defensivePositions;
 
     private List<GameObject> playerAgents = new List<GameObject>();
@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 
         //Pause everything except camera
         Time.timeScale = isQueueing ? 0f : 1f;
-        
+
         if (!isQueueing && queuedCommands.Count > 0)
         {
             ExecuteQueuedCommands();
@@ -230,7 +230,62 @@ public class GameManager : MonoBehaviour
 
     private void ManageEnemies()
     {
-        // TODO
+        float reachableDist = 30f;
+        int healthThreshold = 3;
+        int ammoThreshold = 6;
+
+        for (int i = 1; i < enemyAgents.Count; i++)
+        {
+            GameObject enemyObj = enemyAgents[i].Item1;
+            AgentState agentState = enemyAgents[i].Item2;
+
+            if (enemyObj)
+            {
+
+            }
+        }
+    }
+
+    public (float distance, int index) NearestHealthPack(GameObject enemyObj)
+    {
+        float shortestDistance = float.MaxValue;
+        int closestIndex = -1;
+
+        for (int i = 0; i < healthPacks.Length; i++)
+        {
+            GameObject pack = healthPacks[i];
+            if (!pack.activeInHierarchy) continue; // skip inactive packs
+
+            float dist = Vector3.Distance(enemyObj.transform.position, pack.transform.position);
+            if (dist < shortestDistance)
+            {
+                shortestDistance = dist;
+                closestIndex = i;
+            }
+        }
+
+        return (shortestDistance, closestIndex);
+    }
+    
+    public (float distance, int index) NearestAmmoBox(GameObject enemyObj)
+    {
+        float shortestDistance = float.MaxValue;
+        int closestIndex = -1;
+
+        for (int i = 0; i < ammoBoxes.Length; i++)
+        {
+            GameObject box = ammoBoxes[i];
+            if (!box.activeInHierarchy) continue; // skip inactive boxes
+
+            float dist = Vector3.Distance(enemyObj.transform.position, box.transform.position);
+            if (dist < shortestDistance)
+            {
+                shortestDistance = dist;
+                closestIndex = i;
+            }
+        }
+
+        return (shortestDistance, closestIndex);
     }
     
 }

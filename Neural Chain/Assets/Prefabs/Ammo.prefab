@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6996273909242020335}
   - component: {fileID: 7555022995294039}
   - component: {fileID: 197931112588223437}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,9 +120,9 @@ GameObject:
   m_Component:
   - component: {fileID: 777188394829306911}
   - component: {fileID: 8799037510631580557}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ammo
-  m_TagString: Untagged
+  m_TagString: AmmoBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -136,7 +136,7 @@ Transform:
   m_GameObject: {fileID: 7688839536619292396}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.656, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 4369394704641563235}
   - component: {fileID: 7922904031137256202}
   - component: {fileID: 603133171060092934}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 1927086542505585371}
   - component: {fileID: 2320722770377555889}
   - component: {fileID: 3984684028009228482}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

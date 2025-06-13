@@ -122,6 +122,7 @@ GameObject:
   - component: {fileID: 6806760174119810227}
   - component: {fileID: -3085336717790192084}
   - component: {fileID: 3354498380576704851}
+  - component: {fileID: 8333849194090739907}
   m_Layer: 7
   m_Name: EnemyAgent
   m_TagString: EnemyAgent
@@ -283,3 +284,30 @@ MonoBehaviour:
   shouldDefend: 0
   itemTarget: {x: 0, y: 0, z: 0}
   defensivePosition: {fileID: 0}
+--- !u!54 &8333849194090739907
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3449178700525699729}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

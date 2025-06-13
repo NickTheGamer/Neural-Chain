@@ -69,6 +69,21 @@ public class Agent : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HealthPack"))
+        {
+            currentHealth = maxHealth;
+            other.gameObject.SetActive(false);
+        }
+
+        else if (other.CompareTag("AmmoBox"))
+        {
+            currentAmmo = maxAmmo;
+            other.gameObject.SetActive(false);
+        }
+    }
+
     protected virtual void Die()
     {
         Destroy(gameObject);

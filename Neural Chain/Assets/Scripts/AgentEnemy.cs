@@ -15,14 +15,15 @@ public class EnemyAgent : Agent
     public bool shouldGetItem;
     public bool shouldDefend;
     public Vector3 itemTarget;
-    private Transform startPos;
+    private Vector3 startPos;
+    private Quaternion startRot;
     public Transform defensivePosition;
 
     //Avoid state jittering
     private float stateEnterTime;
-    private float minStateDuration = 2f;
+    private float minStateDuration = 1f;
     private bool HasMinDurationElapsed() => Time.time - stateEnterTime >= minStateDuration;
-
+    private bool debugState = true;
     private string currentState;
 
 
@@ -30,7 +31,8 @@ public class EnemyAgent : Agent
     {
         base.Start();
 
-        startPos = transform;
+        startPos = transform.position;
+        startRot = transform.rotation;
         OnBulletBurstFired += OnBulletHeard;
         agent = gameObject.GetComponent<NavMeshAgent>();
 
@@ -51,43 +53,43 @@ public class EnemyAgent : Agent
         enemyAI = new StateMachine(this, needsExitTime: false);
 
         enemyAI.AddState("Idle", new State(
-            onEnter: (state) => { stateEnterTime = Time.time; Idle(); Debug.Log(currentState); },
+            onEnter: (state) => { Idle(); if (debugState) Debug.Log(currentState); },
             onLogic: (state) => RotateIdle()
         ));
 
         enemyAI.AddState("Chasing", new State(
-            onEnter: (state) => { stateEnterTime = Time.time; Chasing(); Debug.Log(currentState); },
+            onEnter: (state) => { Chasing(); if (debugState) Debug.Log(currentState); },
             onLogic: (state) => StopIfInRange()
         ));
 
         enemyAI.AddState("GettingItem", new State(
-            onEnter: (state) => { stateEnterTime = Time.time; GettingItem(); Debug.Log(currentState); }
+            onEnter: (state) => { GettingItem(); if (debugState) Debug.Log(currentState); }
         ));
 
         enemyAI.AddState("DefensivePosition", new State(
-            onEnter: (state) => { stateEnterTime = Time.time; Defensive(); Debug.Log(currentState); },
+            onEnter: (state) => { Defensive(); if (debugState) Debug.Log(currentState); },
             onLogic: (state) => RotateDefensive()
         ));
 
         // === Idle Transitions ===
-        enemyAI.AddTransition(new Transition("Idle", "Chasing", (transition) => HasMinDurationElapsed() && canChase && heardShots && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Idle", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !canChase && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Idle", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !shouldGetItem && !canChase));
+        enemyAI.AddTransition(new Transition("Idle", "Chasing", (transition) => canChase && heardShots && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Idle", "GettingItem", (transition) => shouldGetItem && !canChase && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Idle", "TakingDefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
 
         // === Chasing Transitions ===
-        enemyAI.AddTransition(new Transition("Chasing", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Chasing", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !canChase && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !canChase && !shouldGetItem));
+        enemyAI.AddTransition(new Transition("Chasing", "Idle", (transition) => !shouldGetItem && !shouldDefend && !heardShots));
+        enemyAI.AddTransition(new Transition("Chasing", "GettingItem", (transition) => shouldGetItem && !canChase && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => shouldDefend && !canChase && !shouldGetItem));
 
         // === GettingItem Transitions ===
-        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("GettingItem", "Chasing", (transition) => HasMinDurationElapsed() && canChase && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !shouldGetItem && !canChase));
+        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "Chasing", (transition) => canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
 
         // === Defensive Transitions ===
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Chasing", (transition) => HasMinDurationElapsed() && canChase && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !shouldDefend && !canChase));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Chasing", (transition) => canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "GettingItem", (transition) => shouldGetItem && !shouldDefend && !canChase));
 
         // Set start state
         enemyAI.SetStartState("Idle");
@@ -100,18 +102,18 @@ public class EnemyAgent : Agent
         currentState = "Idle";
         agent.isStopped = false;
         agent.updateRotation = true;
-        agent.SetDestination(startPos.position);
+        agent.SetDestination(startPos);
     }
 
     private void RotateIdle()
     {
         currentState = "RotateIdle";
 
-        if (Vector3.Distance(transform.position, startPos.position) <= 2f)
+        if (Vector3.Distance(transform.position, startPos) <= 2f)
         {
             agent.updateRotation = false;
 
-            Vector3 flatForward = startPos.forward;
+            Vector3 flatForward = startRot * Vector3.forward;
             flatForward.y = 0;
             Quaternion lookRotation = Quaternion.LookRotation(flatForward);
 
@@ -128,7 +130,6 @@ public class EnemyAgent : Agent
         currentState = "Chasing";
         agent.isStopped = false;
         agent.updateRotation = true;
-        heardShots = false;
         agent.SetDestination(chasingLocation);
     }
 
@@ -137,23 +138,24 @@ public class EnemyAgent : Agent
         currentState = "StopIfInRange";
 
         //Chase new target
-        if (heardShots)
-        {
-            agent.SetDestination(chasingLocation);
-            heardShots = false;
-        }
-        
+        //if (heardShots && chasingLocation)
+        //{
+        //    agent.SetDestination(chasingLocation);
+        //    heardShots = false;
+        //}
+
         //Stop if in range
-        if (Vector3.Distance(transform.position, chasingLocation) <= 5f)
+        if (Vector3.Distance(transform.position, chasingLocation) <= 3f)
         {
             agent.isStopped = true;
+            heardShots = false;
         }
     }
 
     private void GettingItem()
     {
         currentState = "GettingItem";
-        
+
         agent.isStopped = false;
         agent.updateRotation = true;
         agent.SetDestination(itemTarget);
@@ -199,6 +201,23 @@ public class EnemyAgent : Agent
         {
             chasingLocation = shotOrigin;
             heardShots = true;
+        }
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HealthPack"))
+        {
+            currentHealth = maxHealth;
+            other.gameObject.SetActive(false);
+            shouldGetItem = false;
+        }
+
+        else if (other.CompareTag("AmmoBox"))
+        {
+            currentAmmo = maxAmmo;
+            shouldGetItem = false;
+            other.gameObject.SetActive(false);
         }
     }
 }
