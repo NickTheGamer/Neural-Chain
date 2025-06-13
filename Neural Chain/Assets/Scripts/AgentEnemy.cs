@@ -6,7 +6,7 @@ public class EnemyAgent : Agent
 {
     public float hearingRadius = 50f;
     private NavMeshAgent agent;
-    private bool heardShots = false;
+    public bool heardShots = false;
     private Vector3 chasingLocation;
     private StateMachine enemyAI;
 
@@ -14,29 +14,36 @@ public class EnemyAgent : Agent
     public bool canChase;
     public bool shouldGetItem;
     public bool shouldDefend;
-    public bool isAtTarget;
     public Vector3 itemTarget;
-    private Vector3 startPos;
-    public Vector3 defensivePosition;
+    private Transform startPos;
+    public Transform defensivePosition;
+
+    //Avoid state jittering
+    private float stateEnterTime;
+    private float minStateDuration = 2f;
+    private bool HasMinDurationElapsed() => Time.time - stateEnterTime >= minStateDuration;
+
+    private string currentState;
 
 
     protected override void Start()
     {
-        CreateFSM();
         base.Start();
-        startPos = transform.position;
+
+        startPos = transform;
         OnBulletBurstFired += OnBulletHeard;
         agent = gameObject.GetComponent<NavMeshAgent>();
+
+        CreateFSM();
+        canChase = true;
+        shouldGetItem = false;
+        shouldDefend = false;
     }
 
     protected override void Update()
     {
         base.Update();
-        /*if (chasing && Vector3.Distance(transform.position, chasingLocation) <= 5f)
-        {
-            chasing = false;
-            agent.SetDestination(transform.position);
-        }*/
+        enemyAI.OnLogic();
     }
 
     private void CreateFSM()
@@ -44,81 +51,141 @@ public class EnemyAgent : Agent
         enemyAI = new StateMachine(this, needsExitTime: false);
 
         enemyAI.AddState("Idle", new State(
-            onEnter: (state) => Idle()
+            onEnter: (state) => { stateEnterTime = Time.time; Idle(); Debug.Log(currentState); },
+            onLogic: (state) => RotateIdle()
         ));
 
         enemyAI.AddState("Chasing", new State(
-            onEnter: (state) => Chasing()
+            onEnter: (state) => { stateEnterTime = Time.time; Chasing(); Debug.Log(currentState); },
+            onLogic: (state) => StopIfInRange()
         ));
 
         enemyAI.AddState("GettingItem", new State(
-            onEnter: (state) => GettingItem()
+            onEnter: (state) => { stateEnterTime = Time.time; GettingItem(); Debug.Log(currentState); }
         ));
 
         enemyAI.AddState("DefensivePosition", new State(
-            onEnter: (state) => Defensive()
+            onEnter: (state) => { stateEnterTime = Time.time; Defensive(); Debug.Log(currentState); },
+            onLogic: (state) => RotateDefensive()
         ));
 
-        enemyAI.SetStartState("Idle");
-
         // === Idle Transitions ===
-        enemyAI.AddTransition(new Transition("Idle", "Chasing", (transition) => canChase && heardShots));
-        enemyAI.AddTransition(new Transition("Idle", "GettingItem", (transition) => shouldGetItem));
-        enemyAI.AddTransition(new Transition("Idle", "TakingDefensivePosition", (transition) => shouldDefend));
+        enemyAI.AddTransition(new Transition("Idle", "Chasing", (transition) => HasMinDurationElapsed() && canChase && heardShots && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Idle", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !canChase && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Idle", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !shouldGetItem && !canChase));
 
         // === Chasing Transitions ===
-        enemyAI.AddTransition(new Transition("Chasing", "Idle", (transition) => !canChase && isAtTarget));
-        enemyAI.AddTransition(new Transition("Chasing", "GettingItem", (transition) => shouldGetItem));
-        enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => shouldDefend));
+        enemyAI.AddTransition(new Transition("Chasing", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Chasing", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !canChase && !shouldDefend));
+        enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !canChase && !shouldGetItem));
 
         // === GettingItem Transitions ===
-        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => isAtTarget));
-        enemyAI.AddTransition(new Transition("GettingItem", "Chasing", (transition) => canChase));
-        enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "Chasing", (transition) => HasMinDurationElapsed() && canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => HasMinDurationElapsed() && shouldDefend && !shouldGetItem && !canChase));
 
         // === Defensive Transitions ===
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => isAtTarget));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Chasing", (transition) => canChase));
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "GettingItem", (transition) => shouldGetItem));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => HasMinDurationElapsed() && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Chasing", (transition) => HasMinDurationElapsed() && canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "GettingItem", (transition) => HasMinDurationElapsed() && shouldGetItem && !shouldDefend && !canChase));
+
+        // Set start state
+        enemyAI.SetStartState("Idle");
+        // Trigger
+        enemyAI.OnEnter();
     }
 
     private void Idle()
     {
-        agent.SetDestination(startPos);
-        isAtTarget = true;
+        currentState = "Idle";
+        agent.isStopped = false;
+        agent.updateRotation = true;
+        agent.SetDestination(startPos.position);
+    }
+
+    private void RotateIdle()
+    {
+        currentState = "RotateIdle";
+
+        if (Vector3.Distance(transform.position, startPos.position) <= 2f)
+        {
+            agent.updateRotation = false;
+
+            Vector3 flatForward = startPos.forward;
+            flatForward.y = 0;
+            Quaternion lookRotation = Quaternion.LookRotation(flatForward);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                lookRotation,
+                agent.angularSpeed * 2 * Time.deltaTime
+            );
+        }
     }
 
     private void Chasing()
     {
-        if (currentTarget == null)
-        {
-            isAtTarget = true;
-            return;
-        }
-
+        currentState = "Chasing";
         agent.isStopped = false;
+        agent.updateRotation = true;
+        heardShots = false;
         agent.SetDestination(chasingLocation);
+    }
 
-        float dist = Vector3.Distance(transform.position, currentTarget.transform.position);
-        isAtTarget = dist < 5f;
+    private void StopIfInRange()
+    {
+        currentState = "StopIfInRange";
+
+        //Chase new target
+        if (heardShots)
+        {
+            agent.SetDestination(chasingLocation);
+            heardShots = false;
+        }
+        
+        //Stop if in range
+        if (Vector3.Distance(transform.position, chasingLocation) <= 5f)
+        {
+            agent.isStopped = true;
+        }
     }
 
     private void GettingItem()
     {
+        currentState = "GettingItem";
+        
         agent.isStopped = false;
+        agent.updateRotation = true;
         agent.SetDestination(itemTarget);
-
-        float dist = Vector3.Distance(transform.position, itemTarget);
-        isAtTarget = dist < 0.5f;
     }
 
     private void Defensive()
     {
-        agent.isStopped = false;
-        agent.SetDestination(defensivePosition);
+        currentState = "Defensive";
 
-        float dist = Vector3.Distance(transform.position, defensivePosition);
-        isAtTarget = dist < 1f;
+        agent.isStopped = false;
+        agent.updateRotation = true;
+        agent.SetDestination(defensivePosition.position);
+    }
+
+    private void RotateDefensive()
+    {
+        currentState = "RotateDefensive";
+
+        if (Vector3.Distance(transform.position, defensivePosition.position) <= 2f)
+        {
+            agent.updateRotation = false;
+
+            Vector3 flatForward = defensivePosition.forward;
+            flatForward.y = 0;
+            Quaternion lookRotation = Quaternion.LookRotation(flatForward);
+
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                lookRotation,
+                agent.angularSpeed * 2 * Time.deltaTime
+            );
+        }
     }
 
     private void OnDestroy()

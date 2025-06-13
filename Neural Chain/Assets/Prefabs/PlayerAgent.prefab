@@ -268,6 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 5
+  currentHealth: 0
   visionMask:
     serializedVersion: 2
     m_Bits: 191
@@ -275,10 +276,12 @@ MonoBehaviour:
   bulletPrefab: {fileID: 8689352320147145458, guid: 97f2e3df7af4d52468ef598e78a05b9d, type: 3}
   firePoint: {fileID: 4855627163490909054}
   maxAmmo: 12
+  currentAmmo: 0
   burstInterval: 0.1
   burstCooldown: 1
-  fireAngleThreshold: 2
+  fireAngleThreshold: 1
   navAgent: {fileID: 2025022092277024629}
+  currentTarget: {fileID: 0}
   viewDistance: 25
   fieldOfView: 100
   rayCount: 25
