@@ -241,41 +241,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
-    /*private void ManageEnemies()
-    {
-        if (playerAgents.Count <= 0)
-        {
-            //If all players dead, all enemies go back to idle
-            for (int i = 0; i < enemyAgents.Count; i++)
-            {
-                resultText.text = "You Lose!";
-                GameObject enemyObj = enemyAgents[i].Item1;
-                EnemyAgent agent = enemyObj.GetComponent<EnemyAgent>();
-                agent.canChase = true;
-                agent.heardShots = false;
-                agent.shouldGetItem = false;
-                agent.shouldDefend = false;
-            }
-            return;
-        }
-
-        float reachableDist = 30f;
-        int healthThreshold = 3;
-        int ammoThreshold = 6;
-
-        for (int i = 1; i < enemyAgents.Count; i++)
-        {
-            GameObject enemyObj = enemyAgents[i].Item1;
-            AgentState agentState = enemyAgents[i].Item2;
-
-            if (enemyObj)
-            {
-
-            }
-        }
-    }*/
-
+    
     private void ManageEnemies()
     {
         if (playerAgents.Count <= 0)
@@ -335,7 +301,7 @@ public class GameManager : MonoBehaviour
             {
                 hasNeed = true;
                 var (dist, index) = NearestAmmoBox(enemyObj);
-                if (dist <= reachableDist && !claimedAmmoboxes.Contains(index))
+                if (dist <= reachableDist && !claimedAmmoboxes.Contains(index) && !fulfilledNeed)
                 {
                     claimedAmmoboxes.Add(index);
                     // Assign agent to retrieve ammobox
