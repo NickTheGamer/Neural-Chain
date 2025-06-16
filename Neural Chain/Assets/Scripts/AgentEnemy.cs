@@ -69,19 +69,19 @@ public class EnemyAgent : Agent
         // === Idle Transitions ===
         enemyAI.AddTransition(new Transition("Idle", "Chasing", (transition) => canChase && heardShots && !shouldGetItem && !shouldDefend));
         enemyAI.AddTransition(new Transition("Idle", "GettingItem", (transition) => shouldGetItem && !canChase && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Idle", "TakingDefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
+        enemyAI.AddTransition(new Transition("Idle", "DefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
 
         // === Chasing Transitions ===
         enemyAI.AddTransition(new Transition("Chasing", "Idle", (transition) => !shouldGetItem && !shouldDefend && !heardShots));
         enemyAI.AddTransition(new Transition("Chasing", "GettingItem", (transition) => shouldGetItem && !canChase && !shouldDefend));
-        enemyAI.AddTransition(new Transition("Chasing", "TakingDefensivePosition", (transition) => shouldDefend && !canChase && !shouldGetItem));
+        enemyAI.AddTransition(new Transition("Chasing", "DefensivePosition", (transition) => shouldDefend && !canChase && !shouldGetItem));
 
         // === GettingItem Transitions ===
         enemyAI.AddTransition(new Transition("GettingItem", "Idle", (transition) => canChase && !shouldGetItem && !shouldDefend));
-        enemyAI.AddTransition(new Transition("GettingItem", "TakingDefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
+        enemyAI.AddTransition(new Transition("GettingItem", "DefensivePosition", (transition) => shouldDefend && !shouldGetItem && !canChase));
 
         // === Defensive Transitions ===
-        enemyAI.AddTransition(new Transition("TakingDefensivePosition", "Idle", (transition) => canChase && !shouldGetItem && !shouldDefend));
+        enemyAI.AddTransition(new Transition("DefensivePosition", "Idle", (transition) => canChase && !shouldGetItem && !shouldDefend));
 
         // Set start state
         enemyAI.SetStartState("Idle");
